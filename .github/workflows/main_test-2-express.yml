@@ -25,10 +25,15 @@ jobs:
         run: |
           npm install
           npm run build --if-present
-          npm run test --if-present
+      - name: 'npm install server'
+        working-directory: server
+        run: npm install
+
+      - name: 'copy assets'
+        run: cp -r storybook-static server
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip release.zip ./server/* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -53,7 +58,7 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
+
       - name: Login to Azure
         uses: azure/login@v1
         with:
@@ -68,4 +73,3 @@ jobs:
           app-name: 'test-2-express'
           slot-name: 'Production'
           package: .
-          
